@@ -1,0 +1,15 @@
+{
+  "name": "mozeh",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "npm -w apps/frontend run build",
+    "dev": "npm -w apps/backend run dev & npm -w apps/frontend run dev",
+    "start": "npm -w apps/backend run start & npm -w apps/frontend run start"
+  },
+  "dependencies": {
+    "react-hot-toast": "^2.6.0"
+  }
+}

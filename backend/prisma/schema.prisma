@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum OrderStatus {
+  PENDING
+  ASSIGNED
+  PICKED_UP
+  DELIVERED
+  CANCELLED
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  phone     String?
+  password  String
+  role      String   @default("CUSTOMER")
+  address   String?
+  avatarUrl String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  customerOrders Order[] @relation("CustomerOrders")
+  driverOrders   Order[] @relation("DriverOrders")
+}
+
+model Product {
+  id         String      @id @default(uuid())
+  name_ar    String
+  price      Float
+  imageUrl   String?
+  inStock    Int         @default(0)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  orderItems OrderItem[]
+}
+
+model Order {
+  id          String       @id @default(uuid())
+  status      OrderStatus  @default(PENDING)
+
+  customer     User   @relation("CustomerOrders", fields: [customerId], references: [id])
+  customerId   String
+  customerName String
+
+  phone   String
+  address String
+  notes   String?
+
+  driver   User?   @relation("DriverOrders", fields: [driverId], references: [id])
+  driverId String?
+
+  totalPrice Float
+  createdAt  DateTime @default(now())
+
+  items OrderItem[]
+}
+
+model OrderItem {
+  id        String  @id @default(uuid())
+  order     Order   @relation(fields: [orderId], references: [id])
+  orderId   String
+  product   Product @relation(fields: [productId], references: [id])
+  productId String
+  qty       Int
+  price     Float
+  name_ar   String
+  imageUrl  String?
+}
